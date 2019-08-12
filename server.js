@@ -7,7 +7,22 @@ const server = express();
 server.use(express.json());
 
 server.get("/", (req, res) => {
-  db("accounts")
+  const { limit, sortby, sortdir } = req.query;
+  const query = db("*");
+
+  if (limit) {
+    query.limit(limit);
+  }
+
+  if (sortby) {
+    query.orderBy(sortby);
+    if (sortby && sortdir) {
+      query.orderBy(sortby, sortdir);
+    }
+  }
+
+  query
+    .from("accounts")
     .then(results => {
       res.status(200).json(results);
     })
